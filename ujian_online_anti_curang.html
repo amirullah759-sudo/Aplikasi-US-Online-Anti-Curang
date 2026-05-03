@@ -1,0 +1,462 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--color-background-tertiary);color:var(--color-text-primary)}
+.screen{display:none;min-height:100vh;padding:2rem}
+.screen.active{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.5rem}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;font-size:14px;font-weight:500;transition:all 0.15s}
+.btn:hover{background:var(--color-background-secondary)}
+.btn-primary{background:#1a56db;border-color:#1a56db;color:#fff}
+.btn-primary:hover{background:#1447b8}
+.btn-danger{background:#dc2626;border-color:#dc2626;color:#fff}
+.btn-danger:hover{background:#b91c1c}
+.btn-sm{padding:6px 12px;font-size:13px}
+input,select{width:100%;padding:8px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:14px;outline:none}
+input:focus,select:focus{border-color:#1a56db;box-shadow:0 0 0 2px rgba(26,86,219,0.15)}
+label{display:block;font-size:13px;color:var(--color-text-secondary);margin-bottom:6px;font-weight:500}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.warning-banner{background:#fef3c7;border:1px solid #fde68a;border-radius:var(--border-radius-md);padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;color:#92400e;margin-bottom:1rem}
+.danger-banner{background:#fee2e2;border:1px solid #fecaca;border-radius:var(--border-radius-md);padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;color:#991b1b;margin-bottom:1rem}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:1.5rem}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;text-align:center}
+.stat-val{font-size:24px;font-weight:500;display:block}
+.stat-lbl{font-size:12px;color:var(--color-text-secondary);margin-top:4px}
+.option-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;margin-bottom:8px;transition:all 0.15s}
+.option-item:hover{background:var(--color-background-secondary);border-color:var(--color-border-secondary)}
+.option-item.selected{background:#dbeafe;border-color:#1a56db}
+.option-item input[type=radio]{accent-color:#1a56db;width:16px;height:16px;flex-shrink:0}
+.progress-bar{height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;margin-bottom:1.5rem}
+.progress-fill{height:100%;background:#1a56db;border-radius:3px;transition:width 0.3s}
+.q-nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem}
+.q-btn{width:36px;height:36px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;font-size:13px;font-weight:500;color:var(--color-text-primary);transition:all 0.15s}
+.q-btn:hover{background:var(--color-background-secondary)}
+.q-btn.answered{background:#d1fae5;border-color:#059669;color:#065f46}
+.q-btn.current{background:#1a56db;border-color:#1a56db;color:#fff}
+.log-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px}
+.log-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px}
+.timer-box{display:flex;align-items:center;gap:8px;padding:8px 16px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:18px;font-weight:500;background:var(--color-background-primary)}
+.timer-box.urgent{color:#dc2626;border-color:#fecaca;background:#fee2e2}
+.section-title{font-size:18px;font-weight:500;margin-bottom:1rem}
+.divider{height:0.5px;background:var(--color-border-tertiary);margin:1.5rem 0}
+.fullscreen-notice{text-align:center;padding:2rem;color:var(--color-text-secondary)}
+#violation-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:center;justify-content:center}
+#violation-modal.show{display:flex}
+.modal-box{background:var(--color-background-primary);border-radius:var(--border-radius-lg);padding:2rem;max-width:400px;width:90%;text-align:center}
+.modal-icon{font-size:40px;margin-bottom:1rem}
+.modal-title{font-size:20px;font-weight:500;margin-bottom:0.5rem;color:#dc2626}
+.modal-msg{font-size:14px;color:var(--color-text-secondary);margin-bottom:1.5rem;line-height:1.6}
+.result-answer{display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:var(--border-radius-md);margin-bottom:10px;font-size:14px}
+.result-answer.correct{background:#d1fae5;border:0.5px solid #059669}
+.result-answer.wrong{background:#fee2e2;border:0.5px solid #dc2626}
+.result-answer.unanswered{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary)}
+</style>
+
+<h2 class="sr-only">Aplikasi Ujian Online Anti Curang</h2>
+
+<div id="violation-modal">
+  <div class="modal-box">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title">Pelanggaran Terdeteksi!</div>
+    <div class="modal-msg" id="modal-msg">Anda berpindah tab atau keluar dari halaman ujian.</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-danger" id="modal-close" onclick="closeModal()">Kembali ke Ujian</button>
+      <button class="btn" onclick="terminateExam()">Keluar Ujian</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 1: SETUP (Admin) -->
+<div id="screen-setup" class="screen active">
+  <div style="max-width:700px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="font-size:32px;margin-bottom:8px">📋</div>
+      <h1 style="font-size:22px;font-weight:500;margin-bottom:6px">Pengaturan Ujian</h1>
+      <p style="color:var(--color-text-secondary);font-size:14px">Konfigurasi soal & fitur anti-curang sebelum mulai</p>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="section-title">Informasi Ujian</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div>
+          <label>Nama Mata Pelajaran</label>
+          <input type="text" id="cfg-subject" value="Pendidikan Agama Islam" />
+        </div>
+        <div>
+          <label>Kode Kelas</label>
+          <input type="text" id="cfg-class" value="XII-SMK-2024" />
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <label>Durasi Ujian (menit)</label>
+          <input type="number" id="cfg-duration" value="60" min="5" max="180" />
+        </div>
+        <div>
+          <label>Batas Pelanggaran (sebelum keluar otomatis)</label>
+          <input type="number" id="cfg-maxviol" value="3" min="1" max="10" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="section-title">Fitur Anti-Curang</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;color:var(--color-text-primary)">
+          <input type="checkbox" id="ac-fullscreen" checked style="width:16px;height:16px;flex-shrink:0"> Paksa Layar Penuh
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;color:var(--color-text-primary)">
+          <input type="checkbox" id="ac-tabswitch" checked style="width:16px;height:16px;flex-shrink:0"> Deteksi Pindah Tab
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;color:var(--color-text-primary)">
+          <input type="checkbox" id="ac-copypaste" checked style="width:16px;height:16px;flex-shrink:0"> Blokir Copy-Paste
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;color:var(--color-text-primary)">
+          <input type="checkbox" id="ac-rightclick" checked style="width:16px;height:16px;flex-shrink:0"> Blokir Klik Kanan
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;color:var(--color-text-primary)">
+          <input type="checkbox" id="ac-shuffle" checked style="width:16px;height:16px;flex-shrink:0"> Acak Urutan Soal
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;color:var(--color-text-primary)">
+          <input type="checkbox" id="ac-devtools" checked style="width:16px;height:16px;flex-shrink:0"> Deteksi DevTools
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;color:var(--color-text-primary)">
+          <input type="checkbox" id="ac-printscreen" checked style="width:16px;height:16px;flex-shrink:0"> Deteksi Print Screen
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;color:var(--color-text-primary)">
+          <input type="checkbox" id="ac-focus" checked style="width:16px;height:16px;flex-shrink:0"> Deteksi Kehilangan Fokus
+        </label>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="section-title">Soal Ujian (Contoh USBN)</div>
+      <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem">Soal sudah disiapkan — bisa disesuaikan untuk Google Form dengan menambahkan lebih banyak soal.</p>
+      <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;font-size:13px;color:var(--color-text-secondary)">
+        ✓ 10 soal pilihan ganda tersedia &nbsp;|&nbsp; Bisa diacak otomatis &nbsp;|&nbsp; Skor 0–100
+      </div>
+    </div>
+
+    <div style="text-align:center">
+      <button class="btn btn-primary" onclick="goToLogin()" style="padding:12px 32px;font-size:16px">
+        Mulai Buat Ujian →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: LOGIN SISWA -->
+<div id="screen-login" class="screen">
+  <div style="max-width:420px;margin:4rem auto">
+    <div class="card">
+      <div style="text-align:center;margin-bottom:1.5rem">
+        <div style="font-size:36px;margin-bottom:8px">🎓</div>
+        <div style="font-size:20px;font-weight:500" id="login-subject">Ujian</div>
+        <div style="font-size:13px;color:var(--color-text-secondary)" id="login-class">Kelas</div>
+      </div>
+
+      <div class="warning-banner">
+        <span style="font-size:16px">⚠️</span>
+        <span>Pastikan kamu tidak berpindah tab atau menutup halaman selama ujian berlangsung.</span>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <label>Nama Lengkap</label>
+        <input type="text" id="student-name" placeholder="Masukkan nama lengkap" />
+      </div>
+      <div style="margin-bottom:16px">
+        <label>Nomor Induk Siswa</label>
+        <input type="text" id="student-nis" placeholder="Contoh: 12345" />
+      </div>
+      <div style="margin-bottom:20px">
+        <label>Token Ujian</label>
+        <input type="text" id="student-token" placeholder="Masukkan token dari pengawas" />
+      </div>
+
+      <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;margin-bottom:20px;font-size:13px;color:var(--color-text-secondary)">
+        <strong style="color:var(--color-text-primary);display:block;margin-bottom:6px">Peraturan Ujian:</strong>
+        Dilarang membuka tab lain · Dilarang copy-paste · Dilarang screenshot · Setiap pelanggaran akan dicatat
+      </div>
+
+      <button class="btn btn-primary" onclick="startExam()" style="width:100%;justify-content:center">
+        Mulai Ujian
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: UJIAN -->
+<div id="screen-exam" class="screen">
+  <div style="max-width:780px;margin:0 auto">
+    <div class="topbar">
+      <div>
+        <div style="font-size:16px;font-weight:500" id="exam-subject-label">Ujian</div>
+        <div style="font-size:13px;color:var(--color-text-secondary)" id="exam-student-label">Siswa</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="badge badge-amber" id="viol-badge">0 pelanggaran</div>
+        <div class="timer-box" id="timer-display">60:00</div>
+        <button class="btn btn-danger btn-sm" onclick="confirmSubmit()">Selesai</button>
+      </div>
+    </div>
+
+    <div id="active-warnings"></div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:10%"></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 220px;gap:1rem;align-items:start">
+      <div class="card">
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px" id="q-counter">Soal 1 dari 10</div>
+        <div style="font-size:16px;line-height:1.7;margin-bottom:1.5rem;font-weight:500" id="q-text">Memuat soal...</div>
+        <div id="q-options"></div>
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <button class="btn btn-sm" onclick="prevQ()" id="btn-prev">← Sebelumnya</button>
+          <button class="btn btn-primary btn-sm" onclick="nextQ()" id="btn-next">Selanjutnya →</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:1rem">
+          <div style="font-size:13px;font-weight:500;margin-bottom:10px">Navigasi Soal</div>
+          <div class="q-nav" id="q-nav"></div>
+        </div>
+        <div class="card">
+          <div style="font-size:13px;font-weight:500;margin-bottom:10px">Log Aktivitas</div>
+          <div id="activity-log" style="max-height:220px;overflow-y:auto">
+            <div style="font-size:12px;color:var(--color-text-secondary)">Belum ada aktivitas mencurigakan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: HASIL -->
+<div id="screen-result" class="screen">
+  <div style="max-width:680px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="font-size:40px;margin-bottom:8px" id="result-icon">🎉</div>
+      <h1 style="font-size:22px;font-weight:500;margin-bottom:6px">Ujian Selesai</h1>
+      <p style="color:var(--color-text-secondary);font-size:14px" id="result-name-label">Nama Siswa</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat"><span class="stat-val" id="r-score">-</span><div class="stat-lbl">Nilai</div></div>
+      <div class="stat"><span class="stat-val" id="r-correct">-</span><div class="stat-lbl">Benar</div></div>
+      <div class="stat"><span class="stat-val" id="r-wrong">-</span><div class="stat-lbl">Salah</div></div>
+      <div class="stat"><span class="stat-val" id="r-viol">-</span><div class="stat-lbl">Pelanggaran</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="section-title">Rekap Jawaban</div>
+      <div id="answer-recap"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="section-title">Log Pelanggaran</div>
+      <div id="viol-log-result">
+        <div style="font-size:13px;color:var(--color-text-secondary)">Tidak ada pelanggaran tercatat.</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="exportResult()">Ekspor Hasil (CSV)</button>
+      <button class="btn" onclick="location.reload()">Ujian Baru</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS=[
+  {q:"Rukun Islam yang pertama adalah...",opts:["Shalat","Syahadat","Puasa","Zakat"],ans:1},
+  {q:"Surat Al-Fatihah terdiri dari berapa ayat?",opts:["5 ayat","6 ayat","7 ayat","8 ayat"],ans:2},
+  {q:"Zakat fitrah wajib dibayarkan pada bulan...",opts:["Rajab","Sya'ban","Ramadhan","Muharram"],ans:2},
+  {q:"Nabi Muhammad SAW lahir pada tahun...",opts:["570 M","571 M","572 M","573 M"],ans:1},
+  {q:"Kitab suci umat Islam adalah...",opts:["Injil","Zabur","Taurat","Al-Qur'an"],ans:3},
+  {q:"Shalat Subuh terdiri dari berapa rakaat?",opts:["2 rakaat","3 rakaat","4 rakaat","5 rakaat"],ans:0},
+  {q:"Puasa Ramadhan berlangsung selama...",opts:["20 hari","25 hari","29 atau 30 hari","31 hari"],ans:2},
+  {q:"Haji wajib dilaksanakan sekali seumur hidup bagi yang...",opts:["Ingin saja","Mampu secara fisik dan finansial","Sudah tua","Belum menikah"],ans:1},
+  {q:"Malaikat yang bertugas menyampaikan wahyu kepada nabi adalah...",opts:["Mikail","Israfil","Jibril","Izrail"],ans:2},
+  {q:"Nabi yang membuat bahtera/kapal besar adalah...",opts:["Nabi Ibrahim","Nabi Musa","Nabi Nuh","Nabi Isa"],ans:2}
+];
+
+let cfg={},student={},answers=[],violations=[],violCount=0,currentQ=0,timeLeft=0,timerInterval=null,examActive=false,questions=[];
+
+function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');}
+
+function goToLogin(){
+  cfg={subject:document.getElementById('cfg-subject').value,cls:document.getElementById('cfg-class').value,duration:parseInt(document.getElementById('cfg-duration').value)||60,maxViol:parseInt(document.getElementById('cfg-maxviol').value)||3,fullscreen:document.getElementById('ac-fullscreen').checked,tabswitch:document.getElementById('ac-tabswitch').checked,copypaste:document.getElementById('ac-copypaste').checked,rightclick:document.getElementById('ac-rightclick').checked,shuffle:document.getElementById('ac-shuffle').checked,devtools:document.getElementById('ac-devtools').checked,printscreen:document.getElementById('ac-printscreen').checked,focus:document.getElementById('ac-focus').checked};
+  document.getElementById('login-subject').textContent=cfg.subject;
+  document.getElementById('login-class').textContent=cfg.cls;
+  showScreen('login');
+}
+
+function startExam(){
+  const name=document.getElementById('student-name').value.trim();
+  const nis=document.getElementById('student-nis').value.trim();
+  const token=document.getElementById('student-token').value.trim();
+  if(!name||!nis){alert('Nama dan NIS wajib diisi!');return;}
+  if(token.toUpperCase()!=='USBN2024'){alert('Token ujian salah! Minta ke pengawas.\n(Demo: USBN2024)');return;}
+  student={name,nis};
+  questions=cfg.shuffle?shuffle(QUESTIONS):[...QUESTIONS];
+  answers=new Array(questions.length).fill(null);
+  violations=[];violCount=0;
+  timeLeft=cfg.duration*60;
+  examActive=true;
+  document.getElementById('exam-subject-label').textContent=cfg.subject;
+  document.getElementById('exam-student-label').textContent=name+' — '+nis;
+  showScreen('exam');
+  buildQNav();renderQ();startTimer();setupAntiCheat();
+  if(cfg.fullscreen&&document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().catch(()=>{})}
+}
+
+function buildQNav(){
+  const nav=document.getElementById('q-nav');nav.innerHTML='';
+  questions.forEach((_,i)=>{const b=document.createElement('button');b.className='q-btn'+(i===currentQ?' current':answers[i]!==null?' answered':'');b.textContent=i+1;b.onclick=()=>{currentQ=i;renderQ()};nav.appendChild(b);});
+}
+
+function renderQ(){
+  const q=questions[currentQ];
+  document.getElementById('q-counter').textContent='Soal '+(currentQ+1)+' dari '+questions.length;
+  document.getElementById('q-text').textContent=(currentQ+1)+'. '+q.q;
+  const opts=document.getElementById('q-options');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const d=document.createElement('div');d.className='option-item'+(answers[currentQ]===i?' selected':'');
+    d.innerHTML='<input type="radio" name="opt" '+(answers[currentQ]===i?'checked':'')+'>'+['A','B','C','D'][i]+'. '+o;
+    d.onclick=()=>{answers[currentQ]=i;buildQNav();renderQ()};opts.appendChild(d);
+  });
+  const fill=Math.round((answers.filter(a=>a!==null).length/questions.length)*100);
+  document.getElementById('progress-fill').style.width=fill+'%';
+  document.getElementById('btn-prev').disabled=currentQ===0;
+  document.getElementById('btn-next').textContent=currentQ===questions.length-1?'Selesai ✓':'Selanjutnya →';
+  buildQNav();
+}
+
+function prevQ(){if(currentQ>0){currentQ--;renderQ();}}
+function nextQ(){if(currentQ<questions.length-1){currentQ++;renderQ();}else{confirmSubmit();}}
+
+function startTimer(){
+  timerInterval=setInterval(()=>{
+    if(!examActive)return;
+    timeLeft--;
+    const m=Math.floor(timeLeft/60),s=timeLeft%60;
+    const box=document.getElementById('timer-display');
+    box.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    if(timeLeft<=300)box.classList.add('urgent');else box.classList.remove('urgent');
+    if(timeLeft<=0){clearInterval(timerInterval);submitExam('Waktu habis');}
+  },1000);
+}
+
+function logViolation(type,detail){
+  if(!examActive)return;
+  violCount++;violations.push({time:new Date().toLocaleTimeString(),type,detail});
+  document.getElementById('viol-badge').textContent=violCount+' pelanggaran';
+  document.getElementById('viol-badge').className='badge badge-red';
+  const log=document.getElementById('activity-log');
+  const item=document.createElement('div');item.className='log-item';
+  item.innerHTML='<div class="log-icon" style="background:#fee2e2">⚠️</div><div><strong style="color:#dc2626;font-size:12px">'+type+'</strong><div style="font-size:12px;color:var(--color-text-secondary)">'+new Date().toLocaleTimeString()+' — '+detail+'</div></div>';
+  if(log.children[0]&&log.children[0].style&&log.children[0].textContent.includes('Belum ada'))log.innerHTML='';
+  log.prepend(item);
+  if(violCount>=cfg.maxViol){submitExam('Batas pelanggaran tercapai ('+violCount+'x)');}
+  else{showModal('Pelanggaran #'+violCount+' Terdeteksi!',type+': '+detail+'\n\n'+(cfg.maxViol-violCount)+' pelanggaran lagi sebelum ujian dihentikan otomatis.');}
+}
+
+function showModal(title,msg){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-msg').textContent=msg;
+  document.getElementById('violation-modal').classList.add('show');
+}
+
+function closeModal(){document.getElementById('violation-modal').classList.remove('show');}
+function terminateExam(){document.getElementById('violation-modal').classList.remove('show');submitExam('Siswa keluar dari ujian');}
+
+function setupAntiCheat(){
+  if(cfg.tabswitch){
+    document.addEventListener('visibilitychange',()=>{if(document.hidden&&examActive)logViolation('Pindah Tab','Dokumen disembunyikan/tab diganti');});
+  }
+  if(cfg.copypaste){
+    document.addEventListener('copy',e=>{if(examActive){e.preventDefault();logViolation('Copy','Mencoba menyalin teks');}});
+    document.addEventListener('paste',e=>{if(examActive){e.preventDefault();logViolation('Paste','Mencoba menempel teks');}});
+    document.addEventListener('cut',e=>{if(examActive){e.preventDefault();logViolation('Cut','Mencoba memotong teks');}});
+  }
+  if(cfg.rightclick){
+    document.addEventListener('contextmenu',e=>{if(examActive){e.preventDefault();logViolation('Klik Kanan','Mencoba membuka menu konteks');}});
+  }
+  if(cfg.focus){
+    window.addEventListener('blur',()=>{if(examActive)logViolation('Kehilangan Fokus','Window browser kehilangan fokus');});
+  }
+  if(cfg.printscreen){
+    document.addEventListener('keydown',e=>{
+      if(!examActive)return;
+      if(e.key==='PrintScreen'){logViolation('Print Screen','Tombol PrintScreen ditekan');}
+      if((e.ctrlKey||e.metaKey)&&(e.key==='p'||e.key==='s'||e.key==='u')){e.preventDefault();logViolation('Shortcut Terlarang','Ctrl+'+e.key.toUpperCase()+' ditekan');}
+      if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))){e.preventDefault();logViolation('DevTools','Mencoba membuka Developer Tools');}
+    });
+  }
+  if(cfg.devtools){
+    setInterval(()=>{
+      if(!examActive)return;
+      const t=new Date();console.log('%cMONITOR','');
+      if(new Date()-t>20)logViolation('DevTools Aktif','Konsol browser terbuka');
+    },3000);
+  }
+  document.addEventListener('selectstart',e=>{if(examActive)e.preventDefault();});
+  document.addEventListener('dragstart',e=>{if(examActive)e.preventDefault();});
+  if(cfg.fullscreen){
+    document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&examActive)logViolation('Keluar Fullscreen','Layar penuh dinonaktifkan');});
+  }
+}
+
+function confirmSubmit(){
+  const unanswered=answers.filter(a=>a===null).length;
+  if(unanswered>0&&!confirm(unanswered+' soal belum dijawab. Yakin ingin mengumpulkan?'))return;
+  submitExam('Siswa mengumpulkan ujian');
+}
+
+function submitExam(reason){
+  examActive=false;
+  clearInterval(timerInterval);
+  if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+  showScreen('result');
+  document.getElementById('result-name-label').textContent=student.name+' ('+student.nis+') — '+reason;
+  let correct=0,wrong=0;
+  const recap=document.getElementById('answer-recap');recap.innerHTML='';
+  questions.forEach((q,i)=>{
+    const ans=answers[i];const isCorrect=ans===q.ans;const unanswered=ans===null;
+    if(isCorrect)correct++;else if(!unanswered)wrong++;
+    const d=document.createElement('div');d.className='result-answer '+(unanswered?'unanswered':isCorrect?'correct':'wrong');
+    d.innerHTML='<div style="font-size:16px">'+(unanswered?'—':isCorrect?'✓':'✗')+'</div><div><div style="font-weight:500;margin-bottom:4px">'+q.q+'</div><div style="font-size:13px">Jawaban kamu: '+(ans!==null?['A','B','C','D'][ans]+'. '+q.opts[ans]:'Tidak dijawab')+' &nbsp;|&nbsp; Jawaban benar: '+['A','B','C','D'][q.ans]+'. '+q.opts[q.ans]+'</div></div>';
+    recap.appendChild(d);
+  });
+  const score=Math.round((correct/questions.length)*100);
+  document.getElementById('r-score').textContent=score;
+  document.getElementById('r-correct').textContent=correct;
+  document.getElementById('r-wrong').textContent=wrong;
+  document.getElementById('r-viol').textContent=violCount;
+  document.getElementById('result-icon').textContent=score>=75?'🎉':score>=60?'📝':'😔';
+  const vlog=document.getElementById('viol-log-result');
+  if(violations.length>0){
+    vlog.innerHTML='';
+    violations.forEach(v=>{const d=document.createElement('div');d.className='log-item';d.innerHTML='<div class="log-icon" style="background:#fee2e2;font-size:11px">⚠️</div><div><strong style="font-size:13px;color:#dc2626">'+v.type+'</strong> <span style="font-size:12px;color:var(--color-text-secondary)">'+v.time+'</span><div style="font-size:12px;color:var(--color-text-secondary)">'+v.detail+'</div></div>';vlog.appendChild(d);});
+  }
+}
+
+function exportResult(){
+  const score=document.getElementById('r-score').textContent;
+  const rows=[['Nama','NIS','Mata Pelajaran','Nilai','Benar','Salah','Pelanggaran','Tanggal']];
+  rows.push([student.name,student.nis,cfg.subject,score,document.getElementById('r-correct').textContent,document.getElementById('r-wrong').textContent,violCount,new Date().toLocaleString()]);
+  questions.forEach((q,i)=>{rows.push(['Soal '+(i+1),q.q,answers[i]!==null?q.opts[answers[i]]:'Tidak dijawab',q.opts[q.ans],answers[i]===q.ans?'Benar':'Salah','','','']);});
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='hasil-ujian-'+student.nis+'.csv';a.click();
+}
+</script>
